@@ -4,8 +4,11 @@
   "description": "West St Paul Votes",
   "main": "index.js",
   "scripts": {
+    "start": "node server",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "next"
+    "dev": "next",
+    "build": "next build",
+    "heroku-postbuild": "next build"
   },
   "author": "Jade Pennig <jade@pennig.name>",
   "license": "ISC",

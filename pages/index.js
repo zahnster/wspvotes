@@ -7,8 +7,6 @@ const ward3Color = '#A92929'
 
 class IndexPage extends Component {
   componentDidMount() {
-    const L = require('leaflet')
-
     mapboxgl.accessToken =
       'pk.eyJ1IjoiemFobnN0ZXIiLCJhIjoiY2pocW1iMW1jMWw4ODM2cGwzMWN5ZmdoOCJ9.rLwhxdCuBsidm3UjP8yu7w'
 
