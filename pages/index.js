@@ -1,6 +1,9 @@
 import { Component } from 'react'
 import Head from 'next/head'
+import inside from 'point-in-polygon'
 
+import { councilMembers } from '../data/rep-data'
+import { votingPlaces } from '../data/voting-data'
 import {
   w1p1,
   w1p2,
@@ -9,15 +12,29 @@ import {
   w3p1,
   w3p2,
   w1p1Color,
-  w1p2Color,
   w2p1Color,
-  w2p2Color,
-  w3p1Color,
-  w3p2Color
+  w3p1Color
 } from '../data/ward-data'
 
 class IndexPage extends Component {
+  constructor() {
+    super()
+
+    this.state = {
+      councilReps: null,
+      votingPlace: null,
+      showInfoPanel: false,
+      address: null,
+      ward: null,
+      precinct: null
+    }
+
+    this.processWardResultsFor = this.processWardResultsFor.bind(this)
+  }
+
   componentDidMount() {
+    const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js')
+
     mapboxgl.accessToken =
       'pk.eyJ1IjoiemFobnN0ZXIiLCJhIjoiY2pocW1iMW1jMWw4ODM2cGwzMWN5ZmdoOCJ9.rLwhxdCuBsidm3UjP8yu7w'
 
@@ -53,30 +70,106 @@ class IndexPage extends Component {
       map.addLayer(w3p2)
     })
 
-    geocoder.on('result', function(ev) {
-      const coords = ev.result.geometry.coordinates
-
+    geocoder.on('result', ev => {
       marker
         .remove()
-        .setLngLat(coords)
+        .setLngLat(ev.result.geometry.coordinates)
         .addTo(map)
+
+      this.processWardResultsFor(ev.result)
+    })
+
+    map.on('click', ev => {
+      console.log(ev, marker.getOffset())
+
+      // map.featuresAt(ev.point, { radius: 100, layer: 'YOUR MARKER LAYER ID' }, function (err, features) {
+      //   console.log(features[0]);
+
+      // });
+    })
+  }
+
+  processWardResultsFor(result) {
+    const coords = result.geometry.coordinates
+
+    const isWard1p1 = inside(coords, w1p1.source.data.geometry.coordinates[0])
+    const isWard1p2 = inside(coords, w1p2.source.data.geometry.coordinates[0])
+    const isWard2p1 = inside(coords, w2p1.source.data.geometry.coordinates[0])
+    const isWard2p2 = inside(coords, w2p2.source.data.geometry.coordinates[0])
+    const isWard3p1 = inside(coords, w3p1.source.data.geometry.coordinates[0])
+    const isWard3p2 = inside(coords, w3p2.source.data.geometry.coordinates[0])
+
+    let address = `${result.address} ${result.text}`
+    let showInfoPanel = true
+    let councilReps, votingPlace, ward, precinct
+
+    // load appropriate data for ward and precinct
+    if (isWard1p1) {
+      councilReps = councilMembers.filter(cp => cp.ward === 'Ward 1')
+      votingPlace = votingPlaces.w1p1
+      ward = 1
+      precinct = 1
+    } else if (isWard1p2) {
+      councilReps = councilMembers.filter(cp => cp.ward === 'Ward 1')
+      votingPlace = votingPlaces.w1p2
+      ward = 1
+      precinct = 2
+    } else if (isWard2p1) {
+      councilReps = councilMembers.filter(cp => cp.ward === 'Ward 2')
+      votingPlace = votingPlaces.w2p1
+      ward = 2
+      precinct = 1
+    } else if (isWard2p2) {
+      councilReps = councilMembers.filter(cp => cp.ward === 'Ward 2')
+      votingPlace = votingPlaces.w2p2
+      ward = 2
+      precinct = 2
+    } else if (isWard3p1) {
+      councilReps = councilMembers.filter(cp => cp.ward === 'Ward 3')
+      votingPlace = votingPlaces.w3p1
+      ward = 3
+      precinct = 1
+    } else if (isWard3p2) {
+      councilReps = councilMembers.filter(cp => cp.ward === 'Ward 3')
+      votingPlace = votingPlaces.w3p2
+      ward = 3
+      precinct = 2
+    } else {
+      // not in WSP
+      showInfoPanel = false
+      address = null
+    }
+
+    this.setState({
+      councilReps,
+      votingPlace,
+      showInfoPanel,
+      ward,
+      precinct,
+      address
     })
   }
 
   render() {
+    const {
+      councilReps,
+      votingPlace,
+      showInfoPanel,
+      address,
+      ward,
+      precinct
+    } = this.state
+
     return (
       <div>
         <Head>
-          <meta
-            name="viewport"
-            content="initial-scale=1,maximum-scale=1,user-scalable=no"
-          />
-          <script src="https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.js" />
+          <meta name="viewport" content="initial-scale=1" />
+          <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js" />
+          <link href="/static/site.css" rel="stylesheet" />
           <link
             href="https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css"
             rel="stylesheet"
           />
-          <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js" />
           <link
             rel="stylesheet"
             href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css"
@@ -88,7 +181,9 @@ class IndexPage extends Component {
           />
         </Head>
 
-        <h1>Find My Ward: West Saint Paul Ward Map</h1>
+        <h1>
+          <span>Find My Ward:</span> West Saint Paul Ward Map
+        </h1>
 
         <div className="legend">
           <h2>Legend:</h2>
@@ -110,50 +205,55 @@ class IndexPage extends Component {
 
         <div id="map" />
 
-        <style jsx global>{`
-          * {
-            padding: 0;
-            margin: 0;
-            box-sizing: border-box;
-          }
+        {showInfoPanel ? (
+          <div className="ward-info">
+            <button
+              className="close"
+              onClick={() =>
+                this.setState({
+                  showInfoPanel: false
+                })
+              }
+            >
+              Close
+            </button>
 
-          body {
-            font-family: 'Montserrat', sans-serif;
-          }
+            <div className="address-info">
+              <h3>{address}</h3>
+              <p>
+                Ward {ward}, Precinct {precinct}
+              </p>
 
-          h1 {
-            margin: 20px 30px;
-            text-align: center;
-          }
+              <div>
+                <h4>Voting Location</h4>
+                <p>
+                  {votingPlace.name}
+                  <br />
+                  {votingPlace.address}
+                </p>
+              </div>
+            </div>
 
-          .legend {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 1rem;
-          }
+            <div className="voting-info" style={{ display: 'none' }}>
+              <div>
+                <h4>Your Council Representatives</h4>
+                <div className="rep-info grid">
+                  {councilReps.map((rep, ri) => (
+                    <p className="flex" key={`rep-${ri}`}>
+                      <strong>{rep.name}</strong>
+                      <br />
+                      {rep.email}
+                      <br />
+                      {rep.termExpires}
+                    </p>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
-          .legend h2 {
-            margin-right: 1rem;
-          }
-
-          .legend ul {
-            display: flex;
-          }
-
-          .legend li {
-            list-style: none;
-            display: flex;
-            align-items: center;
-            margin-right: 1rem;
-          }
-
-          .key {
-            height: 1.5rem;
-            width: 1.5rem;
-            opacity: 0.4;
-            margin-right: 0.5rem;
-          }
-
+        <style jsx>{`
           .key-w1 {
             background: ${w1p1Color};
           }
@@ -166,10 +266,36 @@ class IndexPage extends Component {
             background: ${w3p1Color};
           }
 
-          #map {
-            width: 90vw;
-            height: 80vh;
+          .ward-info {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1.5rem 2rem;
+            z-index: 50;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.4);
+          }
+
+          .voting-info {
+            max-width: 800px;
             margin: 0 auto;
+          }
+
+          .voting-info > div {
+            margin: 0 1rem;
+          }
+
+          .address-info {
+            text-align: center;
+          }
+
+          .rep-info > p {
+            margin: 0 1rem;
+          }
+
+          #map {
+            overflow: hidden;
           }
         `}</style>
       </div>

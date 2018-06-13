@@ -1,0 +1,84 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.5;
+}
+
+h1 {
+  margin: 20px 30px;
+  text-align: center;
+}
+
+p {
+  margin-bottom: 1.5rem;
+}
+
+.legend {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.legend h2 {
+  margin-right: 1rem;
+}
+
+.legend ul {
+  display: flex;
+}
+
+.legend li {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+@media screen and (max-width: 600px) {
+  .legend {
+  }
+}
+
+.key {
+  height: 1.5rem;
+  width: 1.5rem;
+  opacity: 0.4;
+  margin-right: 0.5rem;
+}
+
+#map {
+  width: 90vw;
+  height: 80vh;
+  margin: 0 auto;
+}
+
+.ward-info {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 1.5rem;
+}
+
+.grid {
+  display: flex;
+}
+
+.flex {
+  flex: 1;
+}
+
+.close {
+  appearance: none;
+  border: none;
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  cursor: pointer;
+}
