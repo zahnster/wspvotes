@@ -54,7 +54,7 @@ class WardMap extends Component {
 
     this.marker = new mapboxgl.Marker()
 
-    // this.map.addControl(geocoder)
+    this.map.addControl(geocoder)
     this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }))
 
     // tapping into map events for setup and input responses
