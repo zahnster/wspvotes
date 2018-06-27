@@ -206,7 +206,11 @@ class WardMap extends Component {
           </div>
         ) : null}
 
-        <style jsx>{``}</style>
+        <style jsx>{`
+          .address-info {
+            text-align: center;
+          }
+        `}</style>
       </div>
     )
   }
