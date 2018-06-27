@@ -1,24 +1,33 @@
+import { withRouter } from 'next/router'
 import Head from 'next/head'
 
-export default props => (
-  <div className="container">
-    <Head>
-      <meta name="viewport" content="initial-scale=1" />
-    </Head>
+const IframePage = withRouter(props => {
+  const { tokenKey } = props.router.query
 
-    <iframe src="/embeddable" height="100%" width="100%" />
+  const iframeSrc = tokenKey ? `/embeddable?${tokenKey}` : 'embeddable'
 
-    <style jsx global>{`
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
+  return (
+    <div className="container">
+      <Head>
+        <meta name="viewport" content="initial-scale=1" />
+      </Head>
 
-      .container {
-        height: 100vh;
-        width: 100vw;
-      }
-    `}</style>
-  </div>
-)
+      <iframe src={iframeSrc} height="100%" width="100%" />
+
+      <style jsx global>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        .container {
+          height: 100vh;
+          width: 100vw;
+        }
+      `}</style>
+    </div>
+  )
+})
+
+export default IframePage

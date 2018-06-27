@@ -33,10 +33,11 @@ class WardMap extends Component {
   }
 
   componentDidMount() {
-    const { resultsMode } = this.props
+    const { resultsMode, tokenKey } = this.props
     const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js')
 
     mapboxgl.accessToken =
+      tokenKey ||
       'pk.eyJ1IjoiemFobnN0ZXIiLCJhIjoiY2pocW1iMW1jMWw4ODM2cGwzMWN5ZmdoOCJ9.rLwhxdCuBsidm3UjP8yu7w'
 
     // instantiating & configuring Mapbox classes
