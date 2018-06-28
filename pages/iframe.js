@@ -24,6 +24,7 @@ const IframePage = withRouter(props => {
         .container {
           height: 100vh;
           width: 100vw;
+          padding: 0 20px;
         }
       `}</style>
     </div>

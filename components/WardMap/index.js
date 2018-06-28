@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import inside from 'point-in-polygon'
 import { Component } from 'react'
+import PropTypes from 'prop-types'
 
 import { votingPlaces } from '../../data/voting-data'
 import {
@@ -15,6 +16,8 @@ import {
   w3p1Color
 } from '../../data/ward-data'
 
+const wspCityCenter = [-93.0861503, 44.9022852]
+
 class WardMap extends Component {
   constructor() {
     super()
@@ -28,40 +31,61 @@ class WardMap extends Component {
       precinct: null
     }
 
-    this.processWardResultsFor = this.processWardResultsFor.bind(this)
+    this.initializeMap = this.initializeMap.bind(this)
+    this.updatePopup = this.updatePopup.bind(this)
     this.closeMarker = this.closeMarker.bind(this)
+    this.processWardResultsFor = this.processWardResultsFor.bind(this)
   }
 
   componentDidMount() {
+    this.initializeMap()
+  }
+
+  initializeMap() {
     const { resultsMode, tokenKey } = this.props
     const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js')
+    const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
 
-    mapboxgl.accessToken =
-      tokenKey ||
-      'pk.eyJ1IjoiemFobnN0ZXIiLCJhIjoiY2pocW1iMW1jMWw4ODM2cGwzMWN5ZmdoOCJ9.rLwhxdCuBsidm3UjP8yu7w'
+    // assign token key
+    mapboxgl.accessToken = tokenKey
 
-    // instantiating & configuring Mapbox classes
-    this.map = new mapboxgl.Map({
+    // initialize map elements (map, geocoder, navigationControl, marker, popup)
+    const map = new mapboxgl.Map({
       container: 'map',
       interactive: true,
       style: 'mapbox://styles/mapbox/streets-v10',
-      center: [-93.0861503, 44.9022852],
-      zoom: 12
+      center: wspCityCenter,
+      zoom: 12,
+      minZoom: 12,
+      maxZoom: 18
     })
-
     const geocoder = new MapboxGeocoder({
-      accessToken: mapboxgl.accessToken
+      accessToken: tokenKey,
+      bbox: [-93.1081287, 44.8833858, -93.0678497, 44.9230388],
+      proximity: {
+        latitude: wspCityCenter[1],
+        longitude: wspCityCenter[0]
+      }
+    })
+    const navigationControl = new mapboxgl.NavigationControl({
+      showCompass: false
+    })
+    const marker = new mapboxgl.Marker()
+    const popup = new mapboxgl.Popup({
+      offset: 35
     })
 
-    this.marker = new mapboxgl.Marker()
+    // add controls to map
+    map.addControl(geocoder)
+    map.addControl(navigationControl)
 
-    this.map.addControl(geocoder)
-    this.map.addControl(new mapboxgl.NavigationControl({ showCompass: false }))
+    if (resultsMode === 'popup') {
+      marker.setPopup(popup)
+    }
 
-    // tapping into map events for setup and input responses
-    this.map.on('load', () => {
-      // adding data layers to the map
-      this.map
+    // map load event listener - add ward geocodes
+    map.on('load', () => {
+      map
         .addLayer(w1p1)
         .addLayer(w1p2)
         .addLayer(w2p1)
@@ -71,24 +95,24 @@ class WardMap extends Component {
     })
 
     geocoder.on('result', ev => {
-      this.marker
+      this.processWardResultsFor(ev.result)
+
+      if (resultsMode === 'popup') {
+        this.updatePopup()
+      }
+
+      marker
         .remove()
         .setLngLat(ev.result.geometry.coordinates)
-        .addTo(this.map)
+        .addTo(map)
 
-      this.processWardResultsFor(ev.result)
+      if (resultsMode === 'popup') {
+        marker.togglePopup()
+      }
     })
 
-    // if (resultsMode !== 'popup') {
-    //   map.on('click', ev => {
-    //     console.log(ev, marker.getLngLat())
-
-    //     // map.featuresAt(ev.point, { radius: 100, layer: 'YOUR MARKER LAYER ID' }, function (err, features) {
-    //     //   console.log(features[0]);
-
-    //     // });
-    //   })
-    // }
+    // set certain map references to state
+    this.setState({ popup, marker })
   }
 
   processWardResultsFor(result) {
@@ -103,7 +127,7 @@ class WardMap extends Component {
     const isWard3p2 = inside(coords, w3p2.source.data.geometry.coordinates[0])
 
     let address = `${result.address} ${result.text}`
-    let showInfoPanel = true
+    let showInfoPanel = false
     let votingPlace, ward, precinct
 
     // load appropriate data for ward and precinct
@@ -149,12 +173,34 @@ class WardMap extends Component {
     })
   }
 
+  updatePopup() {
+    const { votingPlace, address, ward, precinct, popup, marker } = this.state
+
+    popup.setHTML(`
+      <div>
+        <h2 class="popup_address">${address}</h2>
+        <h3 class="popup_ward">Ward ${ward}, Precinct ${precinct}</h3>
+
+        <div class="voting-location">
+          <h4 class="voting-location_headline">Voting Location:</h4>
+          <p class="voting-location_address">
+            <strong>${votingPlace.name}</strong>
+            <br />
+            ${votingPlace.address}
+          </p>
+        </div>
+      </div>
+    `)
+  }
+
   closeMarker() {
+    const { marker } = this.state
+
     this.setState({
       showInfoPanel: false
     })
 
-    this.marker.remove()
+    marker.remove()
   }
 
   render() {
@@ -163,22 +209,15 @@ class WardMap extends Component {
     return (
       <div>
         <Head>
-          <meta name="viewport" content="initial-scale=1" />
-          <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.min.js" />
-          <link href="/static/site.css" rel="stylesheet" />
           <link
-            href="https://api.mapbox.com/mapbox-gl-js/v0.44.2/mapbox-gl.css"
+            href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css"
             rel="stylesheet"
           />
           <link
             rel="stylesheet"
-            href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.2.0/mapbox-gl-geocoder.css"
-            type="text/css"
+            href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css"
           />
-          <link
-            href="https://fonts.googleapis.com/css?family=Montserrat"
-            rel="stylesheet"
-          />
+          <link href="/static/ward-map.css" rel="stylesheet" />
         </Head>
 
         <div id="map" />
@@ -206,15 +245,20 @@ class WardMap extends Component {
             </div>
           </div>
         ) : null}
-
-        <style jsx>{`
-          .address-info {
-            text-align: center;
-          }
-        `}</style>
       </div>
     )
   }
+}
+
+WardMap.propTypes = {
+  resultsMode: PropTypes.string,
+  tokenKey: PropTypes.string
+}
+
+WardMap.defaultProps = {
+  resultsMode: 'popup',
+  tokenKey:
+    'pk.eyJ1IjoiemFobnN0ZXIiLCJhIjoiY2pocW1iMW1jMWw4ODM2cGwzMWN5ZmdoOCJ9.rLwhxdCuBsidm3UjP8yu7w'
 }
 
 export default WardMap
