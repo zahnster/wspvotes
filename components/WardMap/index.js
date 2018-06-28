@@ -43,7 +43,7 @@ class WardMap extends Component {
 
   initializeMap() {
     const { resultsMode, tokenKey } = this.props
-    const mapboxgl = require('mapbox-gl/dist/mapbox-gl.js')
+    // const mapboxgl = require('mapbox-gl')
     const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
 
     // assign token key
@@ -209,6 +209,7 @@ class WardMap extends Component {
     return (
       <div>
         <Head>
+          <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js" />
           <link
             href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css"
             rel="stylesheet"
