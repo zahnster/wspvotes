@@ -10,20 +10,33 @@ const port = process.env.PORT || 3000
 
 const recurseNav = navLevel => {
   return navLevel.map(item => {
-    const { pageTitle, urlSlug, subpages } = item.fields
-    const title = pageTitle ? pageTitle : item.fields.name
-    let subpageData = null
-    // let title
+    const contentType = item.sys.contentType.sys.id
+    const { subpages } = item.fields
+    let title, urlSlug, subpageData, nextPath
 
-    // switch ()
+    switch (contentType) {
+      case 'people':
+        title = item.fields.name
+        urlSlug = `/people/${item.fields.encodedName}`
+        nextPath = `/people?personSlug=${item.fields.encodedName}`
+        break
+
+      // default is Page type
+      default:
+        title = item.fields.pageTitle
+        urlSlug = item.fields.urlSlug
+        nextPath = `/index?page=${urlSlug}`
+        break
+    }
 
     if (subpages) {
       subpageData = recurseNav(subpages)
     }
 
     return {
-      pageTitle: title,
+      title,
       urlSlug,
+      nextPath,
       subpages: subpageData
     }
   })
@@ -55,11 +68,16 @@ app.prepare().then(() => {
 
   server.get('/data/people', (req, res) => {
     client.getEntries({ content_type: 'people' }).then(response => {
-      res.type('text/json').send(response)
+      const people = response.items.map(person => person.fields)
+      res.type('text/json').send(people)
     })
   })
 
   // Page APIs
+  server.get('/people/:personSlug', (req, res) => {
+    app.render(req, res, '/people', { personSlug: req.params.personSlug })
+  })
+
   server.get('*', (req, res) => {
     app.render(req, res, '/index', { page: req.params[0] })
   })

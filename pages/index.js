@@ -4,7 +4,8 @@ import { withRouter } from 'next/router'
 class IndexPage extends Component {
   static async getInitialProps({ query }) {
     return {
-      urlSlug: query.page
+      contentType: 'page',
+      slug: query.page
     }
   }
 

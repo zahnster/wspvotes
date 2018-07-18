@@ -11,16 +11,20 @@ class WSPVotesApp extends App {
     // scaffold state
     this.state = {
       nav: null,
-      pages: null
+      pages: null,
+      people: null
     }
 
     // populate data
     this.getNav()
     this.getPages()
+    this.getPeople()
 
     // bind funcs
     this.getNav = this.getNav.bind(this)
     this.getPages = this.getPages.bind(this)
+    this.getPeople = this.getPeople.bind(this)
+    this.getPageContent = this.getPageContent.bind(this)
   }
 
   getNav() {
@@ -35,21 +39,51 @@ class WSPVotesApp extends App {
       .then(pages => this.setState({ pages }))
   }
 
-  render() {
-    const { Component, router } = this.props
-    const { nav, pages } = this.state
-    const { page } = router.query
+  getPeople() {
+    fetch(`${host}/data/people`)
+      .then(res => res.json())
+      .then(people => this.setState({ people }))
+  }
+
+  getPageContent() {
+    const { contentType, slug } = this.props.pageProps
+    const { pages, people } = this.state
     let pageContent = 'Loading...'
 
-    if (pages) {
-      // todo: refactor / enhance to support different page "types" (aka, ppl pages)
-      const pageMatch = pages.filter(pageData => pageData.urlSlug === page)
+    switch (contentType) {
+      case 'people':
+        if (people) {
+          const personMatch = people.filter(
+            personData => personData.encodedName === slug
+          )
 
-      pageContent = pageMatch[0] || {
-        pageTitle: 'Not Found',
-        content: 'Not found'
-      }
+          pageContent = personMatch[0] || {
+            pageTitle: 'Not Found',
+            content: "We're sorry, this person was not found in our system"
+          }
+        }
+
+        break
+
+      default:
+        if (pages) {
+          const pageMatch = pages.filter(pageData => pageData.urlSlug === slug)
+
+          pageContent = pageMatch[0] || {
+            pageTitle: 'Not Found',
+            content: "We're sorry, this page was not found in our system"
+          }
+        }
+        break
     }
+
+    return pageContent
+  }
+
+  render() {
+    const { Component } = this.props
+    const { nav } = this.state
+    let pageContent = this.getPageContent()
 
     return (
       <Container>
