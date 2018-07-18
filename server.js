@@ -47,7 +47,7 @@ app.prepare().then(() => {
   })
 
   server.get('/data/pages', (req, res) => {
-    client.getEntries({ content_type: 'page' }).then(response => {
+    client.getEntries({ content_type: 'page', include: 1 }).then(response => {
       const pages = response.items.map(page => page.fields)
       res.type('text/json').send(pages)
     })

@@ -18,10 +18,16 @@ const recurseNav = navOptions => {
 
 export default props => (
   <header>
-    <h1>WSP Votes</h1>
+    <h1>
+      <Link as="/" href="index?page=/">
+        <a>WSP Votes</a>
+      </Link>
+    </h1>
 
-    <nav>
-      <ul>{recurseNav(props.nav)}</ul>
-    </nav>
+    {props.nav ? (
+      <nav>
+        <ul>{recurseNav(props.nav)}</ul>
+      </nav>
+    ) : null}
   </header>
 )

@@ -4,41 +4,51 @@ import fetch from 'isomorphic-unfetch'
 import Header from '../components/Header'
 
 const host = 'http://localhost:3000'
-
 class WSPVotesApp extends App {
-  static async getInitialProps({ Component, ctx }) {
-    let initialProps = {}
+  constructor() {
+    super()
 
-    if (Component.getInitialProps) {
-      initialProps = await Component.getInitialProps(ctx)
+    // scaffold state
+    this.state = {
+      nav: null,
+      pages: null
     }
 
-    const nav = await this.getNav()
-    const pageData = await this.getPages()
+    // populate data
+    this.getNav()
+    this.getPages()
 
-    return { initialProps, nav, pageData }
+    // bind funcs
+    this.getNav = this.getNav.bind(this)
+    this.getPages = this.getPages.bind(this)
   }
 
-  static async getNav() {
-    const navQuery = await fetch(`${host}/data/nav`)
-    return await navQuery.json()
+  getNav() {
+    fetch(`${host}/data/nav`)
+      .then(res => res.json())
+      .then(nav => this.setState({ nav }))
   }
 
-  static async getPages() {
-    const pageQuery = await fetch(`${host}/data/pages`)
-    return await pageQuery.json()
+  getPages() {
+    fetch(`${host}/data/pages`)
+      .then(res => res.json())
+      .then(pages => this.setState({ pages }))
   }
 
   render() {
-    const { Component, nav, pageData, initialProps } = this.props
+    const { Component, router } = this.props
+    const { nav, pages } = this.state
+    const { page } = router.query
+    let pageContent = 'Loading...'
 
-    const pageMatch = pageData.filter(
-      page => page.urlSlug === initialProps.urlSlug
-    )
+    if (pages) {
+      // todo: refactor / enhance to support different page "types" (aka, ppl pages)
+      const pageMatch = pages.filter(pageData => pageData.urlSlug === page)
 
-    const pageContent = pageMatch[0] || {
-      pageTitle: 'Not Found',
-      content: 'Not found'
+      pageContent = pageMatch[0] || {
+        pageTitle: 'Not Found',
+        content: 'Not found'
+      }
     }
 
     return (
