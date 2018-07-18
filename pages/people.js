@@ -1,6 +1,8 @@
 import { Component } from 'react'
 import { withRouter } from 'next/router'
 
+import Markdown from '../components/Markdown'
+
 class PeoplePage extends Component {
   static async getInitialProps({ query }) {
     return {
@@ -20,12 +22,14 @@ class PeoplePage extends Component {
       twitter
     } = pageContent
 
+    // console.log(md.render(profile))
+
     return (
       <div>
         <h1>{name}</h1>
         <h2>{candidatePosition}</h2>
 
-        {profile}
+        {profile ? <Markdown content={profile} /> : null}
 
         <ul>
           {website ? <li>Website: {website}</li> : null}

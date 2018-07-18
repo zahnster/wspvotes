@@ -1,6 +1,7 @@
 import { Component } from 'react'
 import { withRouter } from 'next/router'
 
+import Markdown from '../components/Markdown'
 class IndexPage extends Component {
   static async getInitialProps({ query }) {
     return {
@@ -15,7 +16,8 @@ class IndexPage extends Component {
     return (
       <div>
         <h2>{pageTitle}</h2>
-        <p>{content}</p>
+
+        {content ? <Markdown content={content} /> : null}
       </div>
     )
   }
