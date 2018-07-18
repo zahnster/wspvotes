@@ -1,12 +1,17 @@
 import { Component } from 'react'
 import { withRouter } from 'next/router'
 
+import { getServerRootFrom } from '../util'
 import Markdown from '../components/Markdown'
+
 class IndexPage extends Component {
-  static async getInitialProps({ query }) {
+  static async getInitialProps({ req, query }) {
+    const serverRoot = getServerRootFrom(req)
+
     return {
       contentType: 'page',
-      slug: query.page
+      slug: query.page,
+      serverRoot
     }
   }
 

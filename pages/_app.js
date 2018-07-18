@@ -3,10 +3,22 @@ import fetch from 'isomorphic-unfetch'
 
 import Header from '../components/Header'
 
-const host = 'http://localhost:3000'
 class WSPVotesApp extends App {
-  constructor() {
+  constructor(props) {
     super()
+
+    const { serverRoot } = props.pageProps
+
+    // populate data
+    this.getNav(serverRoot)
+    this.getPages(serverRoot)
+    this.getPeople(serverRoot)
+
+    // bind funcs
+    this.getNav = this.getNav.bind(this)
+    this.getPages = this.getPages.bind(this)
+    this.getPeople = this.getPeople.bind(this)
+    this.getPageContent = this.getPageContent.bind(this)
 
     // scaffold state
     this.state = {
@@ -14,33 +26,22 @@ class WSPVotesApp extends App {
       pages: null,
       people: null
     }
-
-    // populate data
-    this.getNav()
-    this.getPages()
-    this.getPeople()
-
-    // bind funcs
-    this.getNav = this.getNav.bind(this)
-    this.getPages = this.getPages.bind(this)
-    this.getPeople = this.getPeople.bind(this)
-    this.getPageContent = this.getPageContent.bind(this)
   }
 
-  getNav() {
-    fetch(`${host}/data/nav`)
+  getNav(serverRoot) {
+    fetch(`${serverRoot}/data/nav`)
       .then(res => res.json())
       .then(nav => this.setState({ nav }))
   }
 
-  getPages() {
-    fetch(`${host}/data/pages`)
+  getPages(serverRoot) {
+    fetch(`${serverRoot}/data/pages`)
       .then(res => res.json())
       .then(pages => this.setState({ pages }))
   }
 
-  getPeople() {
-    fetch(`${host}/data/people`)
+  getPeople(serverRoot) {
+    fetch(`${serverRoot}/data/people`)
       .then(res => res.json())
       .then(people => this.setState({ people }))
   }

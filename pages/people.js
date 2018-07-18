@@ -1,13 +1,17 @@
 import { Component } from 'react'
 import { withRouter } from 'next/router'
 
+import { getServerRootFrom } from '../util'
 import Markdown from '../components/Markdown'
 
 class PeoplePage extends Component {
-  static async getInitialProps({ query }) {
+  static async getInitialProps({ req, query }) {
+    const serverRoot = getServerRootFrom(req)
+
     return {
       contentType: 'people',
-      slug: query.personSlug
+      slug: query.personSlug,
+      serverRoot
     }
   }
 
