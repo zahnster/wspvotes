@@ -11,14 +11,18 @@ const port = process.env.PORT || 3000
 const recurseNav = navLevel => {
   return navLevel.map(item => {
     const { pageTitle, urlSlug, subpages } = item.fields
+    const title = pageTitle ? pageTitle : item.fields.name
     let subpageData = null
+    // let title
+
+    // switch ()
 
     if (subpages) {
       subpageData = recurseNav(subpages)
     }
 
     return {
-      pageTitle,
+      pageTitle: title,
       urlSlug,
       subpages: subpageData
     }
@@ -57,7 +61,6 @@ app.prepare().then(() => {
 
   // Page APIs
   server.get('*', (req, res) => {
-    console.log('p!!', req.params[0])
     app.render(req, res, '/index', { page: req.params[0] })
   })
 

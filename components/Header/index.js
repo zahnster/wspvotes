@@ -1,15 +1,19 @@
 import Link from 'next/link'
 
-const recurseNav = (navOptions, level = 1) => {
-  return navOptions.map((opt, i) => (
-    <li key={`nav-item-${level}-${i}`}>
-      <Link as={opt.urlSlug} href={`index?page=${opt.urlSlug}`}>
-        <a>{opt.pageTitle}</a>
-      </Link>
+const recurseNav = navOptions => {
+  return navOptions.map(opt => {
+    const { urlSlug, pageTitle, subpages } = opt
 
-      {opt.subpages ? <ul>{recurseNav(opt.subpages, i + 1)}</ul> : null}
-    </li>
-  ))
+    return (
+      <li key={urlSlug}>
+        <Link as={urlSlug} href={`index?page=${opt.urlSlug}`}>
+          <a>{opt.pageTitle}</a>
+        </Link>
+
+        {opt.subpages ? <ul>{recurseNav(subpages)}</ul> : null}
+      </li>
+    )
+  })
 }
 
 export default props => (
