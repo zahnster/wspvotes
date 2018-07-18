@@ -19,7 +19,7 @@
     "isomorphic-unfetch": "^2.0.0",
     "mapbox-gl": "^0.46.0",
     "markdown-it": "^8.4.2",
-    "next": "^6.1.0",
+    "next": "^6.1.1",
     "point-in-polygon": "^1.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
