@@ -17,6 +17,12 @@ header {
 
     > ul {
       display: none;
+      position: absolute;
+      left: 0;
+      top: 100%;
+      background: #fff;
+      padding: 10px 20px;
+      max-width: 50vw;
 
       > li {
         font-weight: bold;
@@ -28,30 +34,29 @@ header {
       }
     }
 
+    &.nav_center > ul {
+      transform: translateX(-50%);
+    }
+
+    &.nav_right > ul {
+      left: unset;
+      right: 0;
+    }
+
     &:hover {
       > ul {
         display: inline-block;
-        position: absolute;
-        left: 0;
-        top: 100%;
-
-        background: #fff;
-        padding: 10px 20px;
-        max-width: 50vw;
 
         border: 1px solid #e0e0e0;
       }
-    }
-  }
 
-  > li > ul {
-    > li {
-      // font-weight: bold;
-    }
+      > .nav_center {
+        transform: translateX(-50%);
+      }
 
-    ul {
-      // margin-left: 1rem;
-      // margin-bottom: 0.5rem;
+      > .nav_right {
+        right: 0;
+      }
     }
   }
 }
