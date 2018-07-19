@@ -7,4 +7,18 @@
 
 .page-content {
   margin: 1rem 2rem;
+
+  ul,
+  ol {
+    margin-left: 1.5rem;
+  }
+
+  section {
+    margin: 1.5rem 0;
+  }
+}
+
+// People page
+.user-profile {
+  margin: 1.5rem 0;
 }

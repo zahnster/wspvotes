@@ -20,6 +20,7 @@ class PeoplePage extends Component {
     const {
       name,
       candidatePosition,
+      cityPosition,
       profile,
       website,
       facebook,
@@ -31,15 +32,38 @@ class PeoplePage extends Component {
     return (
       <div>
         <h1>{name}</h1>
-        <h2>{candidatePosition}</h2>
-
-        {profile ? <Markdown content={profile} /> : null}
-
         <ul>
-          {website ? <li>Website: {website}</li> : null}
-          {facebook ? <li>Facebook: {facebook}</li> : null}
-          {twitter ? <li>Twitter: {twitter}</li> : null}
+          <li>
+            <strong>Running For:</strong> {candidatePosition}
+          </li>
+          {cityPosition ? (
+            <li>
+              <strong>Current Position:</strong> {cityPosition}
+            </li>
+          ) : null}
         </ul>
+
+        <div className="user-profile">
+          {profile ? <Markdown content={profile} /> : null}
+        </div>
+
+        <section>
+          <h3>In the news</h3>
+          <p>[todo]</p>
+        </section>
+
+        <section>
+          <h3>Submit a Question</h3>
+          <p>[todo]</p>
+        </section>
+
+        <section>
+          <ul>
+            {website ? <li>Website: {website}</li> : null}
+            {facebook ? <li>Facebook: {facebook}</li> : null}
+            {twitter ? <li>Twitter: {twitter}</li> : null}
+          </ul>
+        </section>
       </div>
     )
   }
