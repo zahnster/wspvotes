@@ -1,5 +1,7 @@
 import Link from 'next/link'
 
+import './style.scss'
+
 const recurseNav = navOptions => {
   return navOptions.map(opt => {
     const { title, urlSlug, subpages, nextPath } = opt
@@ -25,8 +27,8 @@ export default props => (
     </h1>
 
     {props.nav ? (
-      <nav>
-        <ul>{recurseNav(props.nav)}</ul>
+      <nav className="nav">
+        <ul className="nav_list">{recurseNav(props.nav)}</ul>
       </nav>
     ) : null}
   </header>

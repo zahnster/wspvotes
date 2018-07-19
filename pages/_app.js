@@ -2,6 +2,7 @@ import App, { Container } from 'next/app'
 import fetch from 'isomorphic-unfetch'
 
 import Header from '../components/Header'
+import '../style/app-styles.scss'
 
 class WSPVotesApp extends App {
   constructor(props) {
@@ -89,7 +90,9 @@ class WSPVotesApp extends App {
     return (
       <Container>
         <Header nav={nav} />
-        <Component pageContent={pageContent} />
+        <div className="page-content">
+          <Component pageContent={pageContent} />
+        </div>
       </Container>
     )
   }
