@@ -18,14 +18,15 @@
     "contentful": "^6.1.1",
     "dotenv": "^6.0.0",
     "express": "^4.16.3",
-    "isomorphic-unfetch": "^2.0.0",
-    "mapbox-gl": "^0.46.0",
+    "isomorphic-unfetch": "^2.1.0",
+    "mapbox-gl": "^0.47.0",
     "markdown-it": "^8.4.2",
     "next": "^6.1.1",
     "node-sass": "^4.9.2",
     "point-in-polygon": "^1.0.1",
     "prop-types": "^15.6.2",
     "react": "^16.4.1",
-    "react-dom": "^16.4.1"
+    "react-dom": "^16.4.1",
+    "short-id": "0.1.0-1"
   }
 }
