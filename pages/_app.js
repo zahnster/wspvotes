@@ -1,3 +1,4 @@
+import { Fragment } from 'react'
 import App, { Container } from 'next/app'
 import fetch from 'isomorphic-unfetch'
 
@@ -85,14 +86,21 @@ class WSPVotesApp extends App {
   render() {
     const { Component } = this.props
     const { nav } = this.state
+    const contentType = this.props.pageProps.contentType
     let pageContent = this.getPageContent()
 
     return (
       <Container>
-        <Header nav={nav} />
-        <div className="page-content">
+        {contentType === 'bare' ? (
           <Component pageContent={pageContent} />
-        </div>
+        ) : (
+          <Fragment>
+            <Header nav={nav} />
+            <div className="page-content">
+              <Component pageContent={pageContent} />
+            </div>
+          </Fragment>
+        )}
       </Container>
     )
   }

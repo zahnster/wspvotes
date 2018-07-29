@@ -1,4 +1,3 @@
-import Head from 'next/head'
 import inside from 'point-in-polygon'
 import { Component } from 'react'
 import PropTypes from 'prop-types'
@@ -15,6 +14,8 @@ import {
   w2p1Color,
   w3p1Color
 } from '../../data/ward-data'
+
+import './style.scss'
 
 const wspCityCenter = [-93.0861503, 44.9022852]
 
@@ -43,7 +44,7 @@ class WardMap extends Component {
 
   initializeMap() {
     const { resultsMode, tokenKey } = this.props
-    // const mapboxgl = require('mapbox-gl')
+    const mapboxgl = require('mapbox-gl')
     const MapboxGeocoder = require('@mapbox/mapbox-gl-geocoder')
 
     // assign token key
@@ -208,19 +209,6 @@ class WardMap extends Component {
 
     return (
       <div>
-        <Head>
-          <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.js" />
-          <link
-            href="https://api.tiles.mapbox.com/mapbox-gl-js/v0.46.0/mapbox-gl.css"
-            rel="stylesheet"
-          />
-          <link
-            rel="stylesheet"
-            href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v2.3.0/mapbox-gl-geocoder.css"
-          />
-          <link href="/static/ward-map.css" rel="stylesheet" />
-        </Head>
-
         <div id="map" />
 
         {showInfoPanel ? (

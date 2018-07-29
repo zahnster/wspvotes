@@ -5,6 +5,15 @@
   box-sizing: border-box;
 }
 
+h1 {
+  margin: 20px 30px;
+  text-align: center;
+}
+
+p {
+  margin-bottom: 1.5rem;
+}
+
 .page-content {
   margin: 1rem 2rem;
 
@@ -21,4 +30,18 @@
 // People page
 .user-profile {
   margin: 1.5rem 0;
+}
+
+#map {
+  height: 70vh;
+  width: calc(100vw - 4rem);
+  margin: 0 auto;
+}
+
+// Embeddable
+.embeddable {
+  #map {
+    width: 100vw;
+    height: 100vh;
+  }
 }

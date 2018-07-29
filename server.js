@@ -78,6 +78,10 @@ app.prepare().then(() => {
     app.render(req, res, '/people', { personSlug: req.params.personSlug })
   })
 
+  server.get('/embeddable', (req, res) => {
+    app.render(req, res, '/embeddable', req.params)
+  })
+
   server.get('*', (req, res) => {
     app.render(req, res, '/index', { page: req.params[0] })
   })

@@ -20,9 +20,10 @@ header {
       position: absolute;
       left: 0;
       top: 100%;
-      background: #fff;
-      padding: 10px 20px;
       max-width: 50vw;
+      padding: 10px 20px;
+      background: #fff;
+      z-index: 5;
 
       > li {
         font-weight: bold;
