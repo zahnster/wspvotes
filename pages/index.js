@@ -5,6 +5,7 @@ import ids from 'short-id'
 
 import { getServerRootFrom } from '../util'
 import Markdown from '../components/Markdown'
+import SubpagePreview from '../components/SubpagePreview'
 
 // dynamic components - dynamic import doesn't process scss
 // const WardMap = dynamic(import('../components/WardMap'))
@@ -26,13 +27,24 @@ class IndexPage extends Component {
   }
 
   render() {
-    const { pageTitle, content, componentEmbeds } = this.props.pageContent
+    const {
+      pageTitle,
+      content,
+      componentEmbeds,
+      subpages
+    } = this.props.pageContent
 
     return (
       <div>
         <h2>{pageTitle}</h2>
 
         {content ? <Markdown content={content} /> : null}
+
+        {subpages
+          ? subpages.map((page, i) => (
+              <SubpagePreview page={page} key={`subpage-${i}`} />
+            ))
+          : null}
 
         {componentEmbeds
           ? componentEmbeds.map(name => {
